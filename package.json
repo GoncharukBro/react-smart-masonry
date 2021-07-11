@@ -1,0 +1,26 @@
+{
+  "name": "react-flexible-masonry",
+  "version": "1.0.0",
+  "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
+  "description": "React flexible masonry",
+  "keywords": [
+    "react",
+    "masonry",
+    "flex",
+    "flexbox",
+    "responsive-masonry"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GoncharukBro/react-flexible-masonry.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GoncharukBro/react-flexible-masonry/issues"
+  },
+  "homepage": "https://github.com/GoncharukBro/react-flexible-masonry#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
