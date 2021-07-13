@@ -17,4 +17,6 @@ export const Masonry: ComponentStory<typeof MasonryComponent> = (args) => (
   </MasonryComponent>
 );
 
-Masonry.args = {};
+Masonry.args = {
+  columns: { md: 2, lg: 5 },
+};

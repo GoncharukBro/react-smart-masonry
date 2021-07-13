@@ -1,15 +1,26 @@
 import { useState, useEffect, useMemo, Children } from 'react';
-import breakpoints from './breakpoints';
-import { Columns, Gap } from './types';
 
-export type MasonryProps = React.PropsWithChildren<
-  Partial<Record<Columns, number> & Record<Gap, number>> & {}
->;
+type Breakpoints = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+const breakpoints: Record<Breakpoints, number> = { xs: 0, sm: 600, md: 960, lg: 1280, xl: 1920 };
+
+type Columns = Partial<Record<Breakpoints, number>>;
+type Gap = Partial<Record<Breakpoints, React.CSSProperties['marginLeft']>>;
+
+interface Params {
+  columns: number;
+  gap: React.CSSProperties['marginLeft'];
+}
+
+export type MasonryProps = React.PropsWithChildren<{
+  columns?: Columns;
+  gap?: Gap;
+}>;
 
 export default function Masonry(props: MasonryProps) {
-  const { children, cxl = 2, clg, cmd, csm, cxs, gxl = 24, glg, gmd, gsm, gxs } = props;
+  const { children, columns: columnSize, gap: gapSize } = props;
   const [width, setWidth] = useState(window.innerWidth);
-  const [params, setParams] = useState({ columns: cxl, gap: gxl });
+  const [params, setParams] = useState<Params>({ columns: 2, gap: 24 });
 
   // Записываем текущую ширину страницы
   useEffect(() => {
@@ -28,23 +39,23 @@ export default function Masonry(props: MasonryProps) {
   useEffect(() => {
     setParams((prev) => {
       if (width > breakpoints.xl) {
-        return { columns: cxl || cxl, gap: gxl || gxl };
+        return { columns: columnSize?.xl || prev.columns, gap: gapSize?.xl || prev.gap };
       }
       if (width > breakpoints.lg) {
-        return { columns: clg || cxl, gap: glg || gxl };
+        return { columns: columnSize?.lg || prev.columns, gap: gapSize?.lg || prev.gap };
       }
       if (width > breakpoints.md) {
-        return { columns: cmd || cxl, gap: gmd || gxl };
+        return { columns: columnSize?.md || prev.columns, gap: gapSize?.md || prev.gap };
       }
       if (width > breakpoints.sm) {
-        return { columns: csm || cxl, gap: gsm || gxl };
+        return { columns: columnSize?.sm || prev.columns, gap: gapSize?.sm || prev.gap };
       }
       if (width > breakpoints.xs) {
-        return { columns: cxs || cxl, gap: gxs || gxl };
+        return { columns: columnSize?.xs || prev.columns, gap: gapSize?.xs || prev.gap };
       }
       return prev;
     });
-  }, [width, clg, cmd, csm, cxl, cxs, glg, gmd, gsm, gxl, gxs]);
+  }, [width, columnSize, gapSize]);
 
   const columns = useMemo(() => {
     const array: JSX.Element[][] = [];
