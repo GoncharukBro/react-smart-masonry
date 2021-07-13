@@ -8,51 +8,58 @@ export type MasonryProps = React.PropsWithChildren<
 
 export default function Masonry(props: MasonryProps) {
   const { children, cxl = 2, clg, cmd, csm, cxs, gxl = 24, glg, gmd, gsm, gxs } = props;
-  const [breakpoint, setBreakpoint] = useState(window.innerWidth);
+  const [width, setWidth] = useState(window.innerWidth);
   const [params, setParams] = useState({ columns: cxl, gap: gxl });
 
   // Записываем текущую ширину страницы
   useEffect(() => {
-    const handleBreakpoint = () => setBreakpoint(window.innerWidth);
-    window.addEventListener('resize', handleBreakpoint);
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+
     return () => {
-      window.removeEventListener('resize', handleBreakpoint);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
   // Устанавливаем параметры в зависимости от текущей ширины страницы
   useEffect(() => {
-    setParams(() => {
-      if (breakpoint > breakpoints.xl) {
-        return { columns: cxl, gap: gxl };
+    setParams((prev) => {
+      if (width > breakpoints.xl) {
+        return { columns: cxl || cxl, gap: gxl || gxl };
       }
-      if (breakpoint > breakpoints.lg) {
+      if (width > breakpoints.lg) {
         return { columns: clg || cxl, gap: glg || gxl };
       }
-      if (breakpoint > breakpoints.md) {
+      if (width > breakpoints.md) {
         return { columns: cmd || cxl, gap: gmd || gxl };
       }
-      if (breakpoint > breakpoints.sm) {
+      if (width > breakpoints.sm) {
         return { columns: csm || cxl, gap: gsm || gxl };
       }
-      return { columns: cxs || cxl, gap: gxs || gxl };
+      if (width > breakpoints.xs) {
+        return { columns: cxs || cxl, gap: gxs || gxl };
+      }
+      return prev;
     });
-  }, [breakpoint, clg, cmd, csm, cxl, cxs, glg, gmd, gsm, gxl, gxs]);
+  }, [width, clg, cmd, csm, cxl, cxs, glg, gmd, gsm, gxl, gxs]);
 
   const columns = useMemo(() => {
     const array: JSX.Element[][] = [];
 
     // Устанавливаем дочерние элементы поочереди в каждую колонку
-    Children.forEach(children, (item, index) => {
-      const column = index % params.columns;
+    Children.forEach(children, (child, index) => {
+      const columnIndex = index % params.columns;
 
-      if (!array[column]) {
-        array[column] = [];
+      if (!array[columnIndex]) {
+        array[columnIndex] = [];
       }
 
-      array[column].push(
-        <div key={`masonry-column-item-${index + 1}`} style={{ marginBottom: params.gap }}>
-          {item}
+      array[columnIndex].push(
+        <div key={`masonry-item-${index + 1}`} style={{ marginBottom: params.gap }}>
+          {child}
         </div>
       );
     });
@@ -62,15 +69,12 @@ export default function Masonry(props: MasonryProps) {
 
   return (
     <div style={{ display: 'flex' }}>
-      {columns.map((item, index) => (
+      {columns.map((column, index) => (
         <div
           key={`masonry-column-${index + 1}`}
-          style={{
-            flex: 1,
-            marginLeft: index > 0 ? params.gap : 0,
-          }}
+          style={{ flex: 1, marginLeft: index > 0 ? params.gap : 0 }}
         >
-          {item}
+          {column}
         </div>
       ))}
     </div>

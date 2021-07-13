@@ -9,8 +9,8 @@ export default {
 
 export const Masonry: ComponentStory<typeof MasonryComponent> = (args) => (
   <MasonryComponent {...args}>
-    {[...new Array(20)].map((item, index) => (
-      <div style={{ height: 100, background: 'red' }}>
+    {[...new Array(5)].map((item, index) => (
+      <div key={`example-${index + 1}`} style={{ height: 100, background: 'red' }}>
         <p>Masonry {index + 1}</p>
       </div>
     ))}
