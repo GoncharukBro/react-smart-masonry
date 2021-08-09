@@ -1,38 +1,40 @@
 {
-    "env": {
-      "browser": true,
-      "es2021": true
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "plugin:prettier/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "airbnb",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
     },
-    "extends": [
-      "plugin:prettier/recommended",
-      "plugin:react/recommended",
-      "plugin:react-hooks/recommended",
-      "airbnb",
-      "prettier"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "ecmaFeatures": {
-        "jsx": true
-      },
-      "ecmaVersion": 12,
-      "sourceType": "module"
-    },
-    "plugins": ["@typescript-eslint", "prettier", "react"],
-    "rules": {
-      "consistent-return": 1,
-      "import/extensions": 0,
-      "import/no-extraneous-dependencies": [2, { "devDependencies": true }],
-      "import/no-unresolved": 0,
-      "no-undef": 0,
-      "no-unused-vars": [1, { "args": "none" }],
-      "no-use-before-define": 0,
-      "prettier/prettier": [1, { "endOfLine": "auto" }],
-      "react/jsx-filename-extension": [2, { "extensions": [".jsx", ".tsx"] }],
-      "react/jsx-props-no-spreading": 0,
-      "react/jsx-uses-react": 0,
-      "react/react-in-jsx-scope": 0,
-      "react/require-default-props": 0
-    }
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint", "prettier", "react"],
+  "rules": {
+    "arrow-body-style": 0,
+    "consistent-return": 1,
+    "import/extensions": 0,
+    "import/no-extraneous-dependencies": [2, { "devDependencies": true }],
+    "import/no-unresolved": 0,
+    "no-plusplus": 0,
+    "no-shadow": 0,
+    "no-undef": 0,
+    "no-unused-vars": [1, { "args": "none" }],
+    "no-use-before-define": 0,
+    "prettier/prettier": [1, { "endOfLine": "auto" }],
+    "react/jsx-filename-extension": [2, { "extensions": [".jsx", ".tsx"] }],
+    "react/jsx-props-no-spreading": 0,
+    "react/jsx-uses-react": 0,
+    "react/react-in-jsx-scope": 0,
+    "react/require-default-props": 0
   }
-  
+}
