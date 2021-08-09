@@ -2,6 +2,18 @@ import { useState, useEffect, useMemo, Children, isValidElement } from 'react';
 import { normalizeBreakpoints } from './utils';
 import { Columns, Gap, Breakpoints, NormalizedBreakpoints } from './types';
 
+const getCurrentParam = (
+  normalizedBreakpoints: NormalizedBreakpoints,
+  width: number,
+  param: any
+) => {
+  const currentParam = normalizedBreakpoints.find((item, index, array) => {
+    return (width >= item[1] || index === array.length - 1) && param[item[0]] !== undefined;
+  });
+
+  return currentParam ? param[currentParam[0]] : undefined;
+};
+
 export type MasonryProps = React.PropsWithChildren<{
   columns?: Columns;
   gap?: Gap;
@@ -48,27 +60,24 @@ export default function Masonry(props: MasonryProps) {
   // Устанавливаем параметры в зависимости от текущей ширины страницы
   useEffect(() => {
     if (normalizedBreakpoints !== null) {
-      const currentBreakpointIndex = normalizedBreakpoints.findIndex((item, index, array) => {
-        return width >= item[1] || index === array.length - 1;
-      });
+      const gettingCurrentColumns = getCurrentParam(normalizedBreakpoints, width, columns);
 
-      const breakpointForColumns = normalizedBreakpoints.find((item, index) => {
-        return index >= currentBreakpointIndex && columns[item[0]] !== undefined;
-      });
-
-      if (breakpointForColumns) {
-        setCurrentColumns(columns[breakpointForColumns[0]]);
-      }
-
-      const breakpointForGap = normalizedBreakpoints.find((item, index) => {
-        return index >= currentBreakpointIndex && gap[item[0]] !== undefined;
-      });
-
-      if (breakpointForGap) {
-        setCurrentGap(gap[breakpointForGap[0]]);
+      if (gettingCurrentColumns !== undefined) {
+        setCurrentColumns(gettingCurrentColumns);
       }
     }
-  }, [columns, gap, normalizedBreakpoints, width]);
+  }, [columns, normalizedBreakpoints, width]);
+
+  // Устанавливаем параметры в зависимости от текущей ширины страницы
+  useEffect(() => {
+    if (normalizedBreakpoints !== null) {
+      const gettingCurrentGap = getCurrentParam(normalizedBreakpoints, width, gap);
+
+      if (gettingCurrentGap !== undefined) {
+        setCurrentGap(gettingCurrentGap);
+      }
+    }
+  }, [gap, normalizedBreakpoints, width]);
 
   // Устанавливаем дочерние элементы поочереди в каждую колонку
   const content = useMemo(() => {
