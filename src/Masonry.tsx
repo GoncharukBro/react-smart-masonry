@@ -1,26 +1,31 @@
-import { useState, useEffect, useMemo, Children } from 'react';
-
-type Breakpoints = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-
-const breakpoints: Record<Breakpoints, number> = { xs: 0, sm: 600, md: 960, lg: 1280, xl: 1920 };
-
-type Columns = Partial<Record<Breakpoints, number>>;
-type Gap = Partial<Record<Breakpoints, React.CSSProperties['marginLeft']>>;
-
-interface Params {
-  columns: number;
-  gap: React.CSSProperties['marginLeft'];
-}
+import { useState, useEffect, useMemo, Children, isValidElement } from 'react';
+import { normalizeBreakpoints } from './utils';
+import { Breakpoints, NormalizedBreakpoints } from './types';
 
 export type MasonryProps = React.PropsWithChildren<{
-  columns?: Columns;
-  gap?: Gap;
+  columns?: { [key: string]: number };
+  gap?: { [key: string]: number };
+  breakpoints?: Breakpoints;
+  style?: React.CSSProperties;
+  className?: string;
 }>;
 
 export default function Masonry(props: MasonryProps) {
-  const { children, columns: columnSize, gap: gapSize } = props;
+  const {
+    children,
+    columns = { xs: 1 },
+    gap = { xs: 0 },
+    breakpoints = { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536 },
+    style,
+    className,
+  } = props;
+
   const [width, setWidth] = useState(window.innerWidth);
-  const [params, setParams] = useState<Params>({ columns: 2, gap: 24 });
+  const [normalizedBreakpoints, setNormalizedBreakpoints] = useState<NormalizedBreakpoints>(
+    normalizeBreakpoints(breakpoints)
+  );
+  const [currentСolumns, setCurrentColumns] = useState(1);
+  const [currentGap, setCurrentGap] = useState(0);
 
   // Записываем текущую ширину страницы
   useEffect(() => {
@@ -37,55 +42,59 @@ export default function Masonry(props: MasonryProps) {
 
   // Устанавливаем параметры в зависимости от текущей ширины страницы
   useEffect(() => {
-    setParams((prev) => {
-      if (width > breakpoints.xl) {
-        return { columns: columnSize?.xl || prev.columns, gap: gapSize?.xl || prev.gap };
-      }
-      if (width > breakpoints.lg) {
-        return { columns: columnSize?.lg || prev.columns, gap: gapSize?.lg || prev.gap };
-      }
-      if (width > breakpoints.md) {
-        return { columns: columnSize?.md || prev.columns, gap: gapSize?.md || prev.gap };
-      }
-      if (width > breakpoints.sm) {
-        return { columns: columnSize?.sm || prev.columns, gap: gapSize?.sm || prev.gap };
-      }
-      if (width > breakpoints.xs) {
-        return { columns: columnSize?.xs || prev.columns, gap: gapSize?.xs || prev.gap };
-      }
-      return prev;
+    const currentBreakpointIndex = normalizedBreakpoints.findIndex((item, index, array) => {
+      return width >= item[1] || index === array.length - 1;
     });
-  }, [width, columnSize, gapSize]);
 
-  const columns = useMemo(() => {
-    const array: JSX.Element[][] = [];
+    const breakpointForColumns = normalizedBreakpoints.find((item, index) => {
+      return index >= currentBreakpointIndex && columns[item[0]];
+    });
 
-    // Устанавливаем дочерние элементы поочереди в каждую колонку
+    if (breakpointForColumns) {
+      setCurrentColumns(columns[breakpointForColumns[0]]);
+    }
+
+    const breakpointForGap = normalizedBreakpoints.find((item, index) => {
+      return index >= currentBreakpointIndex && gap[item[0]];
+    });
+
+    if (breakpointForGap) {
+      setCurrentGap(gap[breakpointForGap[0]]);
+    }
+  }, [columns, gap, normalizedBreakpoints, width]);
+
+  // Устанавливаем дочерние элементы поочереди в каждую колонку
+  const content = useMemo(() => {
+    const content: JSX.Element[][] = Array.from({ length: currentСolumns }, () => []);
+
     Children.forEach(children, (child, index) => {
-      const columnIndex = index % params.columns;
-
-      if (!array[columnIndex]) {
-        array[columnIndex] = [];
+      if (child && isValidElement(child)) {
+        content[index % currentСolumns].push(child);
       }
-
-      array[columnIndex].push(
-        <div key={`masonry-item-${index + 1}`} style={{ marginBottom: params.gap }}>
-          {child}
-        </div>
-      );
     });
 
-    return array;
-  }, [children, params.columns, params.gap]);
+    return content;
+  }, [children, currentСolumns]);
+
+  const id = 'react-flexible-masonry';
 
   return (
-    <div style={{ display: 'flex' }}>
-      {columns.map((column, index) => (
+    <div id={id} style={{ ...style, display: 'flex' }} className={className}>
+      {content.map((items, index) => (
         <div
-          key={`masonry-column-${index + 1}`}
-          style={{ flex: 1, marginLeft: index > 0 ? params.gap : 0 }}
+          key={`${id}-column-${index + 1}`}
+          id={`${id}-column-${index + 1}`}
+          style={{ flex: 1, marginLeft: index > 0 ? currentGap : undefined }}
         >
-          {column}
+          {items.map((item, index) => (
+            <div
+              key={`${id}-item-${index + 1}`}
+              id={`${id}-item-${index + 1}`}
+              style={{ marginTop: index > 0 ? currentGap : undefined }}
+            >
+              {item}
+            </div>
+          ))}
         </div>
       ))}
     </div>

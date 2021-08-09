@@ -18,5 +18,6 @@ export const Masonry: ComponentStory<typeof MasonryComponent> = (args) => (
 );
 
 Masonry.args = {
-  columns: { md: 2, lg: 5 },
+  columns: { lg: 5, sm: 2 },
+  breakpoints: { xl: 1536, lg: 1200, md: 900, sm: 600, xs: 0 },
 };
