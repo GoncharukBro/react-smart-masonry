@@ -1,22 +1,10 @@
 import { useState, useEffect, useMemo, Children, isValidElement } from 'react';
-import { normalizeBreakpoints } from './utils';
+import { normalizeBreakpoints, getCurrentParam } from './utils';
 import { Columns, Gap, Breakpoints, NormalizedBreakpoints } from './types';
 
-const getCurrentParam = (
-  normalizedBreakpoints: NormalizedBreakpoints,
-  width: number,
-  param: any
-) => {
-  const currentParam = normalizedBreakpoints.find((item, index, array) => {
-    return (width >= item[1] || index === array.length - 1) && param[item[0]] !== undefined;
-  });
-
-  return currentParam ? param[currentParam[0]] : undefined;
-};
-
 export type MasonryProps = React.PropsWithChildren<{
-  columns?: Columns;
-  gap?: Gap;
+  columns?: Columns | number;
+  gap?: Gap | number;
   breakpoints?: Breakpoints;
   style?: React.CSSProperties;
   className?: string;
@@ -25,8 +13,8 @@ export type MasonryProps = React.PropsWithChildren<{
 export default function Masonry(props: MasonryProps) {
   const {
     children,
-    columns = { xs: 1 },
-    gap = { xs: 0 },
+    columns = 1,
+    gap = 0,
     breakpoints = { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536 },
     style,
     className,
@@ -59,23 +47,23 @@ export default function Masonry(props: MasonryProps) {
 
   // Устанавливаем параметры в зависимости от текущей ширины страницы
   useEffect(() => {
-    if (normalizedBreakpoints !== null) {
+    if (typeof columns === 'object' && normalizedBreakpoints !== null) {
       const gettingCurrentColumns = getCurrentParam(normalizedBreakpoints, width, columns);
-
-      if (gettingCurrentColumns !== undefined) {
-        setCurrentColumns(gettingCurrentColumns);
-      }
+      if (gettingCurrentColumns !== undefined) setCurrentColumns(gettingCurrentColumns);
+    }
+    if (typeof columns === 'number') {
+      setCurrentColumns(columns);
     }
   }, [columns, normalizedBreakpoints, width]);
 
   // Устанавливаем параметры в зависимости от текущей ширины страницы
   useEffect(() => {
-    if (normalizedBreakpoints !== null) {
+    if (typeof gap === 'object' && normalizedBreakpoints !== null) {
       const gettingCurrentGap = getCurrentParam(normalizedBreakpoints, width, gap);
-
-      if (gettingCurrentGap !== undefined) {
-        setCurrentGap(gettingCurrentGap);
-      }
+      if (gettingCurrentGap !== undefined) setCurrentGap(gettingCurrentGap);
+    }
+    if (typeof gap === 'number') {
+      setCurrentGap(gap);
     }
   }, [gap, normalizedBreakpoints, width]);
 
