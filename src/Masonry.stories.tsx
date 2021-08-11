@@ -5,10 +5,15 @@ export default {
   title: 'Example',
   component: MasonryComponent,
   argTypes: {},
-} as Meta<MasonryProps>;
+} as Meta<MasonryProps<any>>;
 
 export const Masonry: ComponentStory<typeof MasonryComponent> = (args) => (
-  <MasonryComponent {...args}>
+  <MasonryComponent
+    {...args}
+    breakpoints={{ xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536 }}
+    columns={{ xs: 1 }}
+    gap={{ xs: 1 }}
+  >
     {[...new Array(5)].map((item, index) => (
       <div key={`example-${index + 1}`} style={{ height: 100, background: 'red' }}>
         <p>Masonry {index + 1}</p>
@@ -17,7 +22,4 @@ export const Masonry: ComponentStory<typeof MasonryComponent> = (args) => (
   </MasonryComponent>
 );
 
-Masonry.args = {
-  columns: { lg: 5, sm: 2 },
-  breakpoints: { xl: 1536, lg: 1200, md: 900, sm: 600, xs: 0 },
-};
+Masonry.args = {};

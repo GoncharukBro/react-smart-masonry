@@ -2,23 +2,16 @@ import { useState, useEffect, useMemo, Children, isValidElement } from 'react';
 import { normalizeBreakpoints, getCurrentParam } from './utils';
 import { Columns, Gap, Breakpoints, NormalizedBreakpoints } from './types';
 
-export type MasonryProps = React.PropsWithChildren<{
-  columns?: Columns | number;
-  gap?: Gap | number;
-  breakpoints?: Breakpoints;
+export type MasonryProps<T> = React.PropsWithChildren<{
+  breakpoints?: T;
+  columns: Columns<keyof T> | number;
+  gap?: Gap<keyof T> | number;
   style?: React.CSSProperties;
   className?: string;
 }>;
 
-export default function Masonry(props: MasonryProps) {
-  const {
-    children,
-    columns = 1,
-    gap = 0,
-    breakpoints = { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536 },
-    style,
-    className,
-  } = props;
+export default function Masonry<T extends Breakpoints>(props: MasonryProps<T>) {
+  const { children, breakpoints, columns, gap, style, className } = props;
 
   const [width, setWidth] = useState(window.innerWidth);
   const [normalizedBreakpoints, setNormalizedBreakpoints] = useState<NormalizedBreakpoints | null>(
@@ -42,7 +35,9 @@ export default function Masonry(props: MasonryProps) {
 
   // Нормализуем точки останова
   useEffect(() => {
-    setNormalizedBreakpoints(normalizeBreakpoints(breakpoints));
+    if (breakpoints) {
+      setNormalizedBreakpoints(normalizeBreakpoints(breakpoints));
+    }
   }, [breakpoints]);
 
   // Устанавливаем параметры в зависимости от текущей ширины страницы
@@ -86,25 +81,28 @@ export default function Masonry(props: MasonryProps) {
 
   return (
     <div id={id} style={{ ...style, display: 'flex' }} className={className}>
-      {currentСolumns !== null && currentGap !== null
-        ? content.map((items, index) => (
+      {content.map((items, index) => (
+        <div
+          key={`${id}-column-${index + 1}`}
+          id={`${id}-column-${index + 1}`}
+          style={{
+            flex: 1,
+            marginLeft: currentGap !== null && index > 0 ? currentGap : undefined,
+          }}
+        >
+          {items.map((item, index) => (
             <div
-              key={`${id}-column-${index + 1}`}
-              id={`${id}-column-${index + 1}`}
-              style={{ flex: 1, marginLeft: index > 0 ? currentGap : undefined }}
+              key={`${id}-item-${index + 1}`}
+              id={`${id}-item-${index + 1}`}
+              style={{
+                marginTop: currentGap !== null && index > 0 ? currentGap : undefined,
+              }}
             >
-              {items.map((item, index) => (
-                <div
-                  key={`${id}-item-${index + 1}`}
-                  id={`${id}-item-${index + 1}`}
-                  style={{ marginTop: index > 0 ? currentGap : undefined }}
-                >
-                  {item}
-                </div>
-              ))}
+              {item}
             </div>
-          ))
-        : null}
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
