@@ -10,9 +10,9 @@ export default {
 export const Masonry: ComponentStory<typeof MasonryComponent> = (args) => (
   <MasonryComponent
     {...args}
-    breakpoints={{ xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536 }}
-    columns={{ xs: 1 }}
-    gap={{ xs: 1 }}
+    breakpoints={{ mobile: 0, tablet: 900, desktop: 1536 }}
+    columns={{ tablet: 4 }}
+    // gap={{ tablet: 40 }}
   >
     {[...new Array(5)].map((item, index) => (
       <div key={`example-${index + 1}`} style={{ height: 100, background: 'red' }}>

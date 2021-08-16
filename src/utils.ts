@@ -29,14 +29,30 @@ export function normalizeBreakpoints(breakpoints: Breakpoints): NormalizedBreakp
  * @param param параметр для которого нужно найти точку останова
  * @returns значение параметра по найденой точке останова
  */
-export const getCurrentParam = (
+export function getCurrentParam(
   normalizedBreakpoints: NormalizedBreakpoints,
   width: number,
   param: any
-) => {
-  const currentParam = normalizedBreakpoints.find((item, index, array) => {
-    return (width >= item[1] || index === array.length - 1) && param[item[0]] !== undefined;
+) {
+  const currentParam = normalizedBreakpoints.find((item) => {
+    return width >= item[1] && param[item[0]] !== undefined;
   });
 
   return currentParam ? param[currentParam[0]] : undefined;
-};
+}
+
+/**
+ * Формирует значения для CSS-свойства `margin`.
+ * @param currentGap значение разрыва при текущей точки останова
+ * @param index индекс элемета в массиве элементов к которым применяется CSS-свойство `margin`
+ * @returns значение для CSS-своства `margin`
+ */
+export function getMargin(currentGap: number | null, index: number) {
+  if (currentGap === null) {
+    return undefined;
+  }
+  if (index === 0) {
+    return 0;
+  }
+  return currentGap;
+}
