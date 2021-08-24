@@ -18,7 +18,7 @@ export function applyBreakpointsKeys(keys: string[], values: number[]) {
  * @param breakpoints исходные точки останова
  * @returns нормализованные точки останова
  */
-export function normalizeBreakpoints(breakpoints: Breakpoints): NormalizedBreakpoints {
+export function normalizeBreakpoints<T extends Breakpoints>(breakpoints: T): NormalizedBreakpoints {
   return Object.entries(breakpoints).sort((a, b) => b[1] - a[1]);
 }
 
@@ -34,8 +34,8 @@ export function getCurrentParam(
   width: number,
   param: any
 ) {
-  const currentParam = normalizedBreakpoints.find((item) => {
-    return width >= item[1] && param[item[0]] !== undefined;
+  const currentParam = normalizedBreakpoints.find(([breakpointKey, breakpointValue]) => {
+    return width >= breakpointValue && param[breakpointKey] !== undefined;
   });
 
   return currentParam ? param[currentParam[0]] : undefined;

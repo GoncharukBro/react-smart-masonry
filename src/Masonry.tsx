@@ -4,19 +4,21 @@ import { Breakpoints, NormalizedBreakpoints } from './types';
 
 const DEFAULT_BREAKPOINTS = { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536 };
 
+type DefaultBreakpoints = typeof DEFAULT_BREAKPOINTS;
+
 export type MasonryProps<T> = React.PropsWithChildren<{
   breakpoints?: T;
   // eslint-disable-next-line no-unused-vars
   columns: { [Property in keyof T]?: number } | number;
   // eslint-disable-next-line no-unused-vars
-  gap?: { [key: string]: number } | number;
+  gap?: { [Property in keyof T]?: number } | number;
   style?: React.CSSProperties;
   className?: string;
 }>;
 
-export default function Masonry<T>(
-  props: MasonryProps<T extends Breakpoints ? T : typeof DEFAULT_BREAKPOINTS>
-) {
+type OptionalBreakpoints<T> = T extends Breakpoints ? T : DefaultBreakpoints;
+
+export default function Masonry<T>(props: MasonryProps<OptionalBreakpoints<T>>) {
   const { children, breakpoints = DEFAULT_BREAKPOINTS, columns, gap, style, className } = props;
 
   const [width, setWidth] = useState(window.innerWidth);
