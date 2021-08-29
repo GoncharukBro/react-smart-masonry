@@ -1,32 +1,28 @@
 import { useState, useEffect, useMemo, Children, isValidElement } from 'react';
-import { normalizeBreakpoints, getCurrentParam, getMargin } from './utils';
-import { Breakpoints, NormalizedBreakpoints } from './types';
+import { setParam } from './utils';
 
-const DEFAULT_BREAKPOINTS = { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536 };
+// eslint-disable-next-line no-unused-vars
+type Param<T> = keyof T extends never ? never : { [P in keyof T]?: number };
 
-type DefaultBreakpoints = typeof DEFAULT_BREAKPOINTS;
-
-export type MasonryProps<T> = React.PropsWithChildren<{
-  breakpoints?: T;
-  // eslint-disable-next-line no-unused-vars
-  columns: { [Property in keyof T]?: number } | number;
-  // eslint-disable-next-line no-unused-vars
-  gap?: { [Property in keyof T]?: number } | number;
+export type MasonryProps<T = unknown> = React.PropsWithChildren<{
   style?: React.CSSProperties;
   className?: string;
+  breakpoints?: T;
+  columns?: number | Param<T>;
+  gap?: number | Param<T>;
 }>;
 
-type OptionalBreakpoints<T> = T extends Breakpoints ? T : DefaultBreakpoints;
-
-export default function Masonry<T>(props: MasonryProps<OptionalBreakpoints<T>>) {
-  const { children, breakpoints = DEFAULT_BREAKPOINTS, columns, gap, style, className } = props;
+export default function Masonry<T = unknown>(
+  props: MasonryProps<T extends { [key: string]: number } ? T : never>
+) {
+  const { children, style, className, breakpoints, columns, gap } = props;
 
   const [width, setWidth] = useState(window.innerWidth);
-  const [normalizedBreakpoints, setNormalizedBreakpoints] = useState<NormalizedBreakpoints | null>(
-    null
-  );
-  const [currentСolumns, setCurrentColumns] = useState<number | null>(null);
-  const [currentGap, setCurrentGap] = useState<number | null>(null);
+  const [normalizedBreakpoints, setNormalizedBreakpoints] = useState<
+    [string, number][] | undefined
+  >(undefined);
+  const [currentСolumns, setCurrentColumns] = useState<number | undefined>(undefined);
+  const [currentGap, setCurrentGap] = useState<number | undefined>(undefined);
 
   // Записываем текущую ширину страницы
   useEffect(() => {
@@ -43,41 +39,39 @@ export default function Masonry<T>(props: MasonryProps<OptionalBreakpoints<T>>) 
 
   // Нормализуем точки останова
   useEffect(() => {
-    setNormalizedBreakpoints(normalizeBreakpoints(breakpoints));
+    if (breakpoints) {
+      setNormalizedBreakpoints(() => {
+        return Object.entries(breakpoints).sort((a, b) => b[1] - a[1]);
+      });
+    }
   }, [breakpoints]);
 
   // Устанавливаем параметры в зависимости от текущей ширины страницы
   useEffect(() => {
-    if (typeof columns === 'object' && normalizedBreakpoints !== null) {
-      const gettingCurrentColumns = getCurrentParam(normalizedBreakpoints, width, columns);
-      setCurrentColumns(gettingCurrentColumns !== undefined ? gettingCurrentColumns : null);
-    }
-    if (typeof columns === 'number') {
-      setCurrentColumns(columns);
-    }
+    setParam(normalizedBreakpoints, width, columns, (param) => {
+      setCurrentColumns(param || 1);
+    });
   }, [columns, normalizedBreakpoints, width]);
 
   // Устанавливаем параметры в зависимости от текущей ширины страницы
   useEffect(() => {
-    if (typeof gap === 'object' && normalizedBreakpoints !== null) {
-      const gettingCurrentGap = getCurrentParam(normalizedBreakpoints, width, gap);
-      setCurrentGap(gettingCurrentGap !== undefined ? gettingCurrentGap : null);
-    }
-    if (typeof gap === 'number') {
-      setCurrentGap(gap);
-    }
+    setParam(normalizedBreakpoints, width, gap, (param) => {
+      setCurrentGap(param);
+    });
   }, [gap, normalizedBreakpoints, width]);
 
   // Устанавливаем дочерние элементы поочереди в каждую колонку
   const content = useMemo(() => {
-    const countColumns = currentСolumns || Children.count(children);
+    const countColumns = currentСolumns || 0;
     const content: JSX.Element[][] = Array.from({ length: countColumns }, () => []);
 
-    Children.forEach(children, (child, index) => {
-      if (child && isValidElement(child)) {
-        content[index % countColumns].push(child);
-      }
-    });
+    if (content.length > 0) {
+      Children.forEach(children, (child, index) => {
+        if (child && isValidElement(child)) {
+          content[index % countColumns].push(child);
+        }
+      });
+    }
 
     return content;
   }, [children, currentСolumns]);
@@ -86,20 +80,18 @@ export default function Masonry<T>(props: MasonryProps<OptionalBreakpoints<T>>) 
 
   return (
     <div id={id} style={{ ...style, display: 'flex' }} className={className}>
+      {/* Добавляем колонки */}
       {content.map((items, index) => {
         const columnId = `${id}-column-${index + 1}`;
 
         return (
-          <div
-            key={columnId}
-            id={columnId}
-            style={{ flex: 1, marginLeft: getMargin(currentGap, index) }}
-          >
+          <div key={columnId} id={columnId} style={{ flex: 1, marginLeft: index && currentGap }}>
+            {/* Добавляем элементы */}
             {items.map((item, index) => {
               const itemId = `${columnId}-item-${index + 1}`;
 
               return (
-                <div key={itemId} id={itemId} style={{ marginTop: getMargin(currentGap, index) }}>
+                <div key={itemId} id={itemId} style={{ marginTop: index && currentGap }}>
                   {item}
                 </div>
               );
