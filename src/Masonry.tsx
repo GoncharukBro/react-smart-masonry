@@ -1,64 +1,66 @@
 import { useState, useEffect, useMemo, Children, isValidElement } from 'react';
-import { setParam } from './utils';
 
-// eslint-disable-next-line no-unused-vars
-type Param<T> = keyof T extends never ? never : { [P in keyof T]?: number };
+export interface MasonryProps<B = unknown> extends React.HTMLAttributes<HTMLDivElement> {
+  breakpoints?: B;
+  // eslint-disable-next-line no-unused-vars
+  columns?: number | { [P in keyof B]?: number };
+  // eslint-disable-next-line no-unused-vars
+  gap?: string | number | { [P in keyof B]?: string | number };
+}
 
-export type MasonryProps<T = unknown> = React.PropsWithChildren<{
-  style?: React.CSSProperties;
-  className?: string;
-  breakpoints?: T;
-  columns?: number | Param<T>;
-  gap?: number | Param<T>;
-}>;
+export default function Masonry<B extends { [key: string]: number }>(props: MasonryProps<B>) {
+  const { breakpoints, columns, gap, children, style, ...other } = props;
 
-export default function Masonry<T = unknown>(
-  props: MasonryProps<T extends { [key: string]: number } ? T : never>
-) {
-  const { children, style, className, breakpoints, columns, gap } = props;
-
-  const [width, setWidth] = useState(window.innerWidth);
-  const [normalizedBreakpoints, setNormalizedBreakpoints] = useState<
-    [string, number][] | undefined
-  >(undefined);
+  const [currentBreakpoints, setCurrentBreakpoints] = useState<string[] | undefined>(undefined);
   const [currentСolumns, setCurrentColumns] = useState<number | undefined>(undefined);
-  const [currentGap, setCurrentGap] = useState<number | undefined>(undefined);
+  const [currentGap, setCurrentGap] = useState<string | number | undefined>(undefined);
 
   // Записываем текущую ширину страницы
   useEffect(() => {
+    let breakpoint: string | undefined;
+
     const handleResize = () => {
-      setWidth(window.innerWidth);
+      // Нормализуем контрольные точки с сортировкой от большего к меньшему
+      const normalizedBreakpoints =
+        breakpoints && Object.entries(breakpoints).sort((a, b) => b[1] - a[1]);
+      // Выбераем досупные контрольные точки
+      const filteredBreakpoints = normalizedBreakpoints
+        ?.filter((item) => item[1] <= window.innerWidth)
+        .map((item) => item[0]);
+
+      if (breakpoint !== filteredBreakpoints?.[0]) {
+        breakpoint = filteredBreakpoints?.[0];
+        setCurrentBreakpoints(filteredBreakpoints);
+      }
     };
+
+    // Инициализируем контрольные точки
+    handleResize();
 
     window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
-
-  // Нормализуем точки останова
-  useEffect(() => {
-    if (breakpoints) {
-      setNormalizedBreakpoints(() => {
-        return Object.entries(breakpoints).sort((a, b) => b[1] - a[1]);
-      });
-    }
   }, [breakpoints]);
 
-  // Устанавливаем параметры в зависимости от текущей ширины страницы
   useEffect(() => {
-    setParam(normalizedBreakpoints, width, columns, (param) => {
-      setCurrentColumns(param || 1);
-    });
-  }, [columns, normalizedBreakpoints, width]);
+    if (typeof columns === 'object') {
+      const breakpoint = currentBreakpoints?.find((item) => columns[item] !== undefined);
+      setCurrentColumns(breakpoint ? columns[breakpoint] : 1);
+    } else {
+      setCurrentColumns(columns || 1);
+    }
+  }, [columns, currentBreakpoints]);
 
-  // Устанавливаем параметры в зависимости от текущей ширины страницы
   useEffect(() => {
-    setParam(normalizedBreakpoints, width, gap, (param) => {
-      setCurrentGap(param);
-    });
-  }, [gap, normalizedBreakpoints, width]);
+    if (typeof gap === 'object') {
+      const breakpoint = currentBreakpoints?.find((item) => gap[item] !== undefined);
+      setCurrentGap(breakpoint && gap[breakpoint]);
+    } else {
+      setCurrentGap(gap);
+    }
+  }, [gap, currentBreakpoints]);
 
   // Устанавливаем дочерние элементы поочереди в каждую колонку
   const content = useMemo(() => {
@@ -76,29 +78,19 @@ export default function Masonry<T = unknown>(
     return content;
   }, [children, currentСolumns]);
 
-  const id = 'react-flexible-masonry';
-
   return (
-    <div id={id} style={{ ...style, display: 'flex' }} className={className}>
+    <div style={{ ...style, display: 'flex' }} {...other}>
       {/* Добавляем колонки */}
-      {content.map((items, index) => {
-        const columnId = `${id}-column-${index + 1}`;
-
-        return (
-          <div key={columnId} id={columnId} style={{ flex: 1, marginLeft: index && currentGap }}>
-            {/* Добавляем элементы */}
-            {items.map((item, index) => {
-              const itemId = `${columnId}-item-${index + 1}`;
-
-              return (
-                <div key={itemId} id={itemId} style={{ marginTop: index && currentGap }}>
-                  {item}
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
+      {content.map((items, index) => (
+        <div key={index} style={{ flex: 1, paddingLeft: index && currentGap }}>
+          {/* Добавляем элементы */}
+          {items.map((item, index) => (
+            <div key={index} style={{ paddingTop: index && currentGap }}>
+              {item}
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }

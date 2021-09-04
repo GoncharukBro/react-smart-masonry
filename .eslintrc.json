@@ -28,12 +28,13 @@
     "no-plusplus": 0,
     "no-shadow": 0,
     "no-undef": 0,
-    "no-unused-vars": [1, { "args": "none" }],
+    "no-unused-vars": [1, { "args": "after-used" }],
     "no-use-before-define": 0,
     "prettier/prettier": [1, { "endOfLine": "auto" }],
     "react/jsx-filename-extension": [2, { "extensions": [".jsx", ".tsx"] }],
     "react/jsx-props-no-spreading": 0,
     "react/jsx-uses-react": 0,
+    "react/no-array-index-key": 0,
     "react/react-in-jsx-scope": 0,
     "react/require-default-props": 0
   }
