@@ -1,4 +1,7 @@
 import { useState, useEffect, useMemo, Children, isValidElement } from 'react';
+import { useResize } from './useResize';
+
+type Element<T> = { element: T; index: number };
 
 export interface MasonryProps<B = unknown> extends React.HTMLAttributes<HTMLDivElement> {
   breakpoints?: B;
@@ -6,44 +9,25 @@ export interface MasonryProps<B = unknown> extends React.HTMLAttributes<HTMLDivE
   columns?: number | { [P in keyof B]?: number };
   // eslint-disable-next-line no-unused-vars
   gap?: string | number | { [P in keyof B]?: string | number };
+  reverse?: boolean;
+  disableAlign?: boolean;
 }
 
 export default function Masonry<B extends { [key: string]: number }>(props: MasonryProps<B>) {
-  const { breakpoints, columns, gap, children, style, ...other } = props;
+  const { breakpoints, columns, gap, reverse, disableAlign, children, style, ...other } = props;
 
-  const [currentBreakpoints, setCurrentBreakpoints] = useState<string[] | undefined>(undefined);
-  const [currentСolumns, setCurrentColumns] = useState<number | undefined>(undefined);
+  const { currentBreakpoints, width } = useResize(breakpoints, !disableAlign);
+
+  const [elements, setElements] = useState<Element<HTMLDivElement>[]>([]);
+  const [currentColumns, setCurrentColumns] = useState<number | undefined>(undefined);
   const [currentGap, setCurrentGap] = useState<string | number | undefined>(undefined);
 
-  // Записываем текущую ширину страницы
+  // Выполняем сброс для перерасчета высоты элементов
   useEffect(() => {
-    let breakpoint: string | undefined;
+    setElements([]);
+  }, [children, width]);
 
-    const handleResize = () => {
-      // Нормализуем контрольные точки с сортировкой от большего к меньшему
-      const normalizedBreakpoints =
-        breakpoints && Object.entries(breakpoints).sort((a, b) => b[1] - a[1]);
-      // Выбераем досупные контрольные точки
-      const filteredBreakpoints = normalizedBreakpoints
-        ?.filter((item) => item[1] <= window.innerWidth)
-        .map((item) => item[0]);
-
-      if (breakpoint !== filteredBreakpoints?.[0]) {
-        breakpoint = filteredBreakpoints?.[0];
-        setCurrentBreakpoints(filteredBreakpoints);
-      }
-    };
-
-    // Инициализируем контрольные точки
-    handleResize();
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [breakpoints]);
-
+  // Устанвливаем количество колонок
   useEffect(() => {
     if (typeof columns === 'object') {
       const breakpoint = currentBreakpoints?.find((item) => columns[item] !== undefined);
@@ -53,6 +37,7 @@ export default function Masonry<B extends { [key: string]: number }>(props: Maso
     }
   }, [columns, currentBreakpoints]);
 
+  // Устанавливаем отступ между элементами
   useEffect(() => {
     if (typeof gap === 'object') {
       const breakpoint = currentBreakpoints?.find((item) => gap[item] !== undefined);
@@ -64,29 +49,59 @@ export default function Masonry<B extends { [key: string]: number }>(props: Maso
 
   // Устанавливаем дочерние элементы поочереди в каждую колонку
   const content = useMemo(() => {
-    const countColumns = currentСolumns || 0;
-    const content: JSX.Element[][] = Array.from({ length: countColumns }, () => []);
+    const countColumns = currentColumns || 0;
+    const content = Array.from({ length: countColumns }, () => [] as Element<JSX.Element>[]);
+    const columnHeights = content.map(() => 0);
+    const arrayOfChildren = Children.toArray(children);
+
+    if (reverse) {
+      arrayOfChildren.reverse();
+    }
 
     if (content.length > 0) {
-      Children.forEach(children, (child, index) => {
+      arrayOfChildren.forEach((child, index) => {
         if (child && isValidElement(child)) {
-          content[index % countColumns].push(child);
+          if (elements.length > 0) {
+            // Находим индекс колонки с минимальной высотой
+            const minColumnHeight = Math.min(...columnHeights);
+            const columnIndex = columnHeights.findIndex((item) => item === minColumnHeight);
+
+            if (columnIndex !== -1) {
+              content[columnIndex].push({ element: child, index });
+              // Обновляем высоту текущей колонки
+              const element = elements.find((item) => item.index === index);
+              const elementHeight = element?.element.getBoundingClientRect().height;
+              columnHeights[columnIndex] += elementHeight || 0;
+            }
+          } else {
+            content[index % countColumns].push({ element: child, index });
+          }
         }
       });
     }
 
     return content;
-  }, [children, currentСolumns]);
+  }, [children, reverse, currentColumns, elements]);
+
+  const addElement = (element: HTMLDivElement, index: number) => {
+    if (!disableAlign && elements.length < content.flat().length) {
+      setElements((prev) => [...prev, { element, index }]);
+    }
+  };
 
   return (
-    <div style={{ ...style, display: 'flex' }} {...other}>
+    <div style={{ display: 'flex', ...style }} {...other}>
       {/* Добавляем колонки */}
       {content.map((items, index) => (
         <div key={index} style={{ flex: 1, paddingLeft: index && currentGap }}>
           {/* Добавляем элементы */}
           {items.map((item, index) => (
-            <div key={index} style={{ paddingTop: index && currentGap }}>
-              {item}
+            <div
+              key={index}
+              ref={(ref) => ref && addElement(ref, item.index)}
+              style={{ paddingTop: index && currentGap }}
+            >
+              {item.element}
             </div>
           ))}
         </div>
