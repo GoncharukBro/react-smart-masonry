@@ -47,7 +47,7 @@ export default function Masonry<B extends { [key: string]: number }>(props: Maso
     }
   }, [gap, currentBreakpoints]);
 
-  // Устанавливаем дочерние элементы поочереди в каждую колонку
+  // Устанавливаем дочерние элементы в колонки
   const content = useMemo(() => {
     const countColumns = currentColumns || 0;
     const content = Array.from({ length: countColumns }, () => [] as Element<JSX.Element>[]);
@@ -61,6 +61,7 @@ export default function Masonry<B extends { [key: string]: number }>(props: Maso
     if (content.length > 0) {
       arrayOfChildren.forEach((child, index) => {
         if (child && isValidElement(child)) {
+          // При включенном автопозиционировании
           if (elements.length > 0) {
             // Находим индекс колонки с минимальной высотой
             const minColumnHeight = Math.min(...columnHeights);
@@ -73,6 +74,7 @@ export default function Masonry<B extends { [key: string]: number }>(props: Maso
               const elementHeight = element?.element.getBoundingClientRect().height;
               columnHeights[columnIndex] += elementHeight || 0;
             }
+            // При выключенном автопозиционировании
           } else {
             content[index % countColumns].push({ element: child, index });
           }

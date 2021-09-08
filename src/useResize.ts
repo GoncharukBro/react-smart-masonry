@@ -2,10 +2,10 @@
 import { useState, useEffect } from 'react';
 
 /**
- * Запускает процесс вычисления текущей контрольной точки.
+ * Запускает процесс вычисления текущей контрольной точки по ширине окна браузера.
  * @param breakpoints контрольные точки переданные в `props` компоненту `Masonry`
  * @param align если `true`, компонент будет повторно отрисован при изменении ширины окна браузера
- * @returns
+ * @returns объект со свойством текущих контрольных точек и ширины окна браузера
  */
 export function useResize(breakpoints: { [key: string]: number } | undefined, align?: boolean) {
   const [width, setWidth] = useState<number | undefined>(undefined);
