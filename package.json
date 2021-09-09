@@ -5,10 +5,12 @@
   "description": "React flexible masonry",
   "keywords": [
     "react",
+    "react component",
     "masonry",
+    "responsive masonry",
     "flex",
     "flexbox",
-    "responsive-masonry"
+    "grid"
   ],
   "repository": {
     "type": "git",
@@ -26,6 +28,7 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup --config rollup.config.ts --configPlugin typescript",
     "eslint": "npx eslint \"src/**/*.{ts,tsx}\"",
     "prettier": "prettier --write \"src/**/*.{ts,tsx}\"",
     "storybook": "start-storybook -p 6006",
