@@ -1,6 +1,6 @@
 import { ComponentStory, Meta } from '@storybook/react';
 import MasonryComponent from '.';
-import type { MasonryProps } from './Masonry';
+import type { MasonryProps } from '.';
 
 const breakpoints = { mobile: 0, tablet: 900, desktop: 1600 };
 const columns = { mobile: 2, tablet: 3, desktop: 4 };
