@@ -1,6 +1,6 @@
 {
   "name": "react-flexible-masonry",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
   "description": "React component Masonry for smart and convenient positioning of elements with adaptive width.",
   "keywords": [
