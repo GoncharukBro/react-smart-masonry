@@ -49,7 +49,13 @@ export default {
 
 export const Masonry: ComponentStory<typeof MasonryComponent> = (args) => {
   return (
-    <MasonryComponent {...args} columns={columns} breakpoints={breakpoints} gap={gap}>
+    <MasonryComponent
+      {...args}
+      ref={(ref) => {}}
+      columns={columns}
+      breakpoints={breakpoints}
+      gap={gap}
+    >
       {[...new Array(4)].map((item, index) => (
         <MyComponent key={index} index={index} />
       ))}
