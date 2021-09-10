@@ -10,6 +10,12 @@ This package is perfect for situations where the standard behavior of the `flex`
 npm i react-flexible-masonry
 ```
 
+or using **Yarn**:
+
+```bash
+yarn add react-flexible-masonry
+```
+
 ## Unique properties
 
 | Name         |            Type            | Default | Description                                                                                                                                                                                                        |
@@ -18,7 +24,7 @@ npm i react-flexible-masonry
 | columns      |      number \| object      |    1    | The number of columns. If no value is specified or not found (in the case of breakpoints), items will be lined up in a single column.                                                                              |
 | gap          | string \| number \| object |    0    | Indent between elements. It can take both a numeric and a string value available for the css property `padding`. If value is not specified or not found (in the case of breakpoints), items will be indented zero. |
 | reverse      |          boolean           |  false  | Arranges items in reverse order. It is useful if you need to display elements added to the end of an array, at the top.                                                                                            |
-| disableAlign |          boolean           |  false  | Disables automatic positioning of elements. In this case, the elements will be placed strictly in order in each column.                                                                                            |
+| disableAlign |          boolean           |  false  | Disables smart positioning of elements. In this case, the elements will be placed strictly in order in each column.                                                                                                |
 
 > Since the `Masonry` component is a `div` element, you can also pass any property available to the `div` element.
 
@@ -88,17 +94,17 @@ You don't even need to include all the values for all breakpoints that are in th
 
 > If you set a minimum breakpoint more than 0px, for example, 300px, then when the browser window is between 0px and 300px wide (not including 300px), the `columns` and `gap` properties will take on their default values.
 
-## Automatic positioning
+## Smart positioning
 
-By default, the automatic positioning of elements is enabled in the `Masonry` component, which means if the elements are much differ in height relative to each other, the component will automatically determine for each element the column in which the element will be placed. Otherwise, we may have a situation in which one column is much higher than the others.
+By default, the smart positioning of elements is enabled in the `Masonry` component, which means if the elements are much differ in height relative to each other, the component will automatically determine for each element the column in which the element will be placed. Otherwise, we may have a situation in which one column is much higher than the others.
 
-Let's take a look at a simple example **without** automatic positioning:
+Let's take a look at a simple example **without** smart positioning:
 
 <img src="assets/masonry-without-align.png" alt="masonry-without-align" width="900" >
 
 At first, it is nothing unusual and even logical, when the elements are arranged alternately in each column from left to right, that can be seen by the numbering in the upper left corner of each element.
 
-Let's now take a look at the same example, but this time **with** automatic positioning of elements:
+Let's now take a look at the same example, but this time **with** smart positioning of elements:
 
 <img src="assets/masonry-with-align.png" alt="masonry-with-align" width="900">
 
