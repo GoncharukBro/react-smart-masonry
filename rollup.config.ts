@@ -5,22 +5,29 @@ import typescript from '@rollup/plugin-typescript';
 import babel from '@rollup/plugin-babel';
 import { terser } from 'rollup-plugin-terser';
 
+import pkg from './package.json';
+
 export default {
   input: 'src/index.ts',
   output: [
     {
-      dir: 'dist',
+      file: pkg.main,
       format: 'cjs',
       exports: 'named',
-      preserveModules: true,
-      preserveModulesRoot: 'src',
+    },
+    {
+      file: pkg.module,
+      format: 'es',
+      exports: 'named',
     },
   ],
   plugins: [
     peerDepsExternal(),
     resolve(),
     commonjs(),
-    typescript(),
+    typescript({
+      tsconfig: './tsconfig.json',
+    }),
     babel({
       babelHelpers: 'bundled',
     }),

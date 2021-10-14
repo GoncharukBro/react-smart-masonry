@@ -2,7 +2,9 @@
 
 This package is perfect for situations where the standard behavior of the `flex` css property is not suitable. If you need to arrange elements in order in several columns, and the placed elements have different heights, the `Masonry` component which imports from this package will fit them on the page with the ability to determine the optimal position for each element.
 
-[![NPM](https://img.shields.io/npm/v/react-flexible-masonry.svg)](https://www.npmjs.com/package/react-flexible-masonry)
+![npm](https://img.shields.io/npm/dt/react-flexible-masonry?style=flat-square)
+![npm](https://img.shields.io/npm/v/react-flexible-masonry?style=flat-square)
+![npm bundle size](https://img.shields.io/bundlephobia/min/react-flexible-masonry?style=flat-square)
 
 ## Installation
 

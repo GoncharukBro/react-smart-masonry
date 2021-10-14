@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import { useState, useEffect } from 'react';
 
 /**
@@ -7,7 +6,10 @@ import { useState, useEffect } from 'react';
  * @param align если `true`, компонент будет повторно отрисован при изменении ширины окна браузера
  * @returns объект со свойством текущих контрольных точек и ширины окна браузера
  */
-export function useResize(breakpoints: { [key: string]: number } | undefined, align?: boolean) {
+export default function useResize(
+  breakpoints: { [key: string]: number } | undefined,
+  align?: boolean
+) {
   const [width, setWidth] = useState<number | undefined>(undefined);
   const [currentBreakpoints, setCurrentBreakpoints] = useState<string[] | undefined>(undefined);
 
