@@ -20,13 +20,13 @@ yarn add react-flexible-masonry
 
 ## Unique properties
 
-| Name         |            Type            | Default | Description                                                                                                                                                                                                        |
-| ------------ | :------------------------: | :-----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| breakpoints  |           object           |         | Breakpoints for adaptive component tuning, where key is the name of the breakpoint, value is the number of pixels of minimum width (numeric value). Breakpoints work like `@media (min-width: ...)`.               |
-| columns      |      number \| object      |    1    | The number of columns. If no value is specified or not found (in the case of breakpoints), items will be lined up in a single column.                                                                              |
-| gap          | string \| number \| object |    0    | Indent between elements. It can take both a numeric and a string value available for the css property `padding`. If value is not specified or not found (in the case of breakpoints), items will be indented zero. |
-| reverse      |          boolean           |  false  | Arranges items in reverse order. It is useful if you need to display elements added to the end of an array, at the top.                                                                                            |
-| disableAlign |          boolean           |  false  | Disables smart positioning of elements. In this case, the elements will be placed strictly in order in each column.                                                                                                |
+| Name        |            Type            | Default | Description                                                                                                                                                                                                        |
+| ----------- | :------------------------: | :-----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| breakpoints |           object           |         | Breakpoints for adaptive component tuning, where key is the name of the breakpoint, value is the number of pixels of minimum width (numeric value). Breakpoints work like `@media (min-width: ...)`.               |
+| columns     |      number \| object      |    1    | The number of columns. If no value is specified or not found (in the case of breakpoints), items will be lined up in a single column.                                                                              |
+| gap         | string \| number \| object |    0    | Indent between elements. It can take both a numeric and a string value available for the css property `padding`. If value is not specified or not found (in the case of breakpoints), items will be indented zero. |
+| reverse     |          boolean           |  false  | Arranges items in reverse order. It is useful if you need to display elements added to the end of an array, at the top.                                                                                            |
+| autoArrange |          boolean           |  false  | Disables smart positioning of elements. In this case, the elements will be placed strictly in order in each column.                                                                                                |
 
 > Since the `Masonry` component is a `div` element, you can also pass any property available to the `div` element.
 
@@ -112,7 +112,7 @@ Let's now take a look at the same example, but this time **with** smart position
 
 The size of the elements remains the same, however, we can see how the elements line up in optimal positions for themselves, while creating the most successful structure.
 
-This behavior is not always necessary, because it will need the additional recalculation of elements, so you can disable this option by passing the `disableAlign` property with the value `true`.
+This behavior is not always necessary, because it will need the additional recalculation of elements, so you can disable this option by passing the `autoArrange` property with the value `true`.
 
 ## License
 
