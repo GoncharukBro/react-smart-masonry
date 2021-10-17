@@ -1,6 +1,6 @@
 {
   "name": "react-smart-masonry",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
   "description": "React component Masonry for smart and convenient positioning of elements with adaptive width.",
   "keywords": [
