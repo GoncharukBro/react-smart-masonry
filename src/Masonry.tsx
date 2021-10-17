@@ -1,13 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  Children,
-  forwardRef,
-  isValidElement,
-} from 'react';
+import { useState, useEffect, useMemo, useRef, Children, forwardRef, isValidElement } from 'react';
 import useResize from './useResize';
 
 function getCurrentParam<T, B extends { [key: string]: T } = any>(
@@ -52,6 +43,8 @@ function MasonryComponent<B extends { [key: string]: number }>(
 
   const elements = useRef<Element<HTMLDivElement>[]>([]);
 
+  const [arrange, setArrange] = useState(false);
+
   const [currentColumns, setCurrentColumns] = useState(() => {
     return getCurrentParam<number>(currentBreakpoints, columns, DEFAULT_COLUMNS);
   });
@@ -59,45 +52,14 @@ function MasonryComponent<B extends { [key: string]: number }>(
     return getCurrentParam<string | number>(currentBreakpoints, gap, DEFAULT_GAP);
   });
 
-  // Устанавливаем дочерние элементы в колонки
-  const scheme: Element<JSX.Element>[][] = useMemo(() => {
-    if (currentColumns < 1) return [];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (autoArrange && !arrange) setArrange(true);
 
-    const arrayOfChildren = Children.toArray(children);
-    if (reverse) arrayOfChildren.reverse();
-
-    const newScheme = Array.from({ length: currentColumns }, () => {
-      return [] as Element<JSX.Element>[];
-    });
-
-    arrayOfChildren.forEach((child, index) => {
-      if (child && isValidElement(child)) {
-        if (autoArrange) {
-          console.log('align');
-          const columnHeights = newScheme.map(() => 0);
-
-          // Находим индекс колонки с минимальной высотой
-          const columnIndex = columnHeights.findIndex((item) => {
-            return item === Math.min(...columnHeights);
-          });
-          if (columnIndex !== -1) {
-            newScheme[columnIndex].push({ element: child, index });
-            // Обновляем высоту текущей колонки. Поскольку позиция элементов может измениться
-            // после расределения по колонкам, сравниваем индекс элемента с кэшированным индексом из массива
-            const element = elements.current.find((item) => item.index === index);
-            const elementHeight = element?.element.getBoundingClientRect().height;
-            columnHeights[columnIndex] += elementHeight || 0;
-          }
-        } else {
-          console.log('not-align');
-          const columnIndex = index % currentColumns;
-          newScheme[columnIndex].push({ element: child, index });
-        }
-      }
-    });
-
-    return newScheme;
-  }, [autoArrange, children, currentColumns, reverse]);
+    return () => {
+      if (autoArrange && arrange) setArrange(false);
+    };
+  });
 
   // Устанвливаем количество колонок
   useEffect(() => {
@@ -111,36 +73,66 @@ function MasonryComponent<B extends { [key: string]: number }>(
     setCurrentGap(param);
   }, [gap, currentBreakpoints]);
 
+  // Устанавливаем дочерние элементы в колонки
+  const layout = useMemo(() => {
+    if (currentColumns < 1) return [];
+
+    const arrayOfChildren = Children.toArray(children);
+    if (reverse) arrayOfChildren.reverse();
+
+    const newLayout = Array.from({ length: currentColumns }, () => {
+      return [] as Element<JSX.Element>[];
+    });
+
+    const columnHeights = newLayout.map(() => 0);
+
+    const getcolumnIndex = (index: number) => {
+      if (autoArrange && arrange && elements.current.length > 0) {
+        // Находим индекс колонки с минимальной высотой
+        const columnIndex = columnHeights.findIndex((item) => {
+          return item === Math.min(...columnHeights);
+        });
+        // Обновляем высоту текущей колонки. Поскольку позиция элементов может измениться
+        // после расределения по колонкам, сравниваем индекс элемента с кэшированным индексом из массива
+        const element = elements.current.find((item) => item.index === index);
+        const elementHeight = element?.element.getBoundingClientRect().height;
+        columnHeights[columnIndex] += elementHeight || 0;
+
+        return columnIndex;
+      }
+      return index % currentColumns;
+    };
+
+    arrayOfChildren.forEach((child, index) => {
+      if (child && isValidElement(child)) {
+        newLayout[getcolumnIndex(index)].push({ element: child, index });
+      }
+    });
+
+    return newLayout;
+  }, [arrange, autoArrange, children, currentColumns, reverse]);
+
   // `temporaryElements` временно заполняется элементами, чтобы объект `elements`
   // всегда содержал правильное количество элементов
   const temporaryElements = [] as Element<HTMLDivElement>[];
 
-  const addElement = (index: number, isLast: boolean) => (element: HTMLDivElement | null) => {
+  const addElement = (index: number) => (element: HTMLDivElement | null) => {
     if (element !== null) {
       temporaryElements.push({ element, index });
       elements.current = temporaryElements;
-
-      if (isLast) {
-        console.log('last');
-      }
     }
   };
-
-  console.log('pre-render');
 
   return (
     <div ref={forwardedRef} style={{ display: 'flex', ...style }} {...otherProps}>
       {/* Добавляем колонки */}
-      {scheme.map((column, columnIndex) => (
+      {layout.map((column, columnIndex) => (
         <div key={columnIndex} style={{ flex: 1, paddingLeft: columnIndex && currentGap }}>
           {/* Добавляем элементы */}
           {column.map((item, itemIndex) => (
             <div
               key={itemIndex}
-              ref={addElement(
-                item.index,
-                columnIndex + 1 === scheme.length && itemIndex + 1 === column.length
-              )}
+              ref={addElement(item.index)}
               style={{ paddingTop: itemIndex && currentGap }}
             >
               {item.element}

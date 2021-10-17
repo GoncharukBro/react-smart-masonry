@@ -61,7 +61,7 @@ Masonry.args = {};
 
 export const ResponsiveMasonry: ComponentStory<typeof MasonryComponent> = (args) => {
   return (
-    <MasonryComponent {...args} columns={columns} breakpoints={breakpoints} gap={gap}>
+    <MasonryComponent {...args} columns={columns} breakpoints={breakpoints} gap={gap} autoArrange>
       {[...new Array(7)].map((item, index) => (
         <MyComponent key={index} index={index} />
       ))}
