@@ -1,5 +1,5 @@
 {
-  "name": "react-flexible-masonry",
+  "name": "react-smart-masonry",
   "version": "1.0.2",
   "author": "Nikolay Goncharuk <goncharuk.bro@gmail.com>",
   "description": "React component Masonry for smart and convenient positioning of elements with adaptive width.",
@@ -14,12 +14,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GoncharukBro/react-flexible-masonry.git"
+    "url": "git+https://github.com/GoncharukBro/react-smart-masonry.git"
   },
   "bugs": {
-    "url": "https://github.com/GoncharukBro/react-flexible-masonry/issues"
+    "url": "https://github.com/GoncharukBro/react-smart-masonry/issues"
   },
-  "homepage": "https://github.com/GoncharukBro/react-flexible-masonry#readme",
+  "homepage": "https://github.com/GoncharukBro/react-smart-masonry#readme",
   "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
