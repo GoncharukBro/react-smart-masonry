@@ -20,13 +20,13 @@ yarn add react-smart-masonry
 
 ## Unique properties
 
-| Name        |            Type            | Default | Description                                                                                                                                                                                                        |
-| ----------- | :------------------------: | :-----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| breakpoints |           object           |         | Breakpoints for adaptive component tuning, where key is the name of the breakpoint, value is the number of pixels of minimum width (numeric value). Breakpoints work like `@media (min-width: ...)`.               |
-| columns     |      number \| object      |    1    | The number of columns. If no value is specified or not found (in the case of breakpoints), items will be lined up in a single column.                                                                              |
-| gap         | string \| number \| object |    0    | Indent between elements. It can take both a numeric and a string value available for the css property `padding`. If value is not specified or not found (in the case of breakpoints), items will be indented zero. |
-| reverse     |          boolean           |  false  | Arranges items in reverse order. It is useful if you need to display elements added to the end of an array, at the top.                                                                                            |
-| autoArrange |          boolean           |  false  | Disables smart positioning of elements. In this case, the elements will be placed strictly in order in each column.                                                                                                |
+| Name        |            Type            | Default | Description                                                                                                                                                                                                                                                                             |
+| ----------- | :------------------------: | :-----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| breakpoints |           object           |         | Breakpoints for adaptive component tuning, where key is the name of the breakpoint, value is the number of pixels of minimum width (numeric value). Breakpoints work like `@media (min-width: ...)`.                                                                                    |
+| columns     |      number \| object      |    1    | The number of columns. If no value is specified or not found (in the case of breakpoints), items will be lined up in a single column.                                                                                                                                                   |
+| gap         | string \| number \| object |    0    | Indent between elements. It can take both a numeric and a string value available for the css property `padding`. If value is not specified or not found (in the case of breakpoints), items will be indented zero.                                                                      |
+| reverse     |          boolean           |  false  | Arranges items in reverse order. It is useful if you need to display elements added to the end of an array, at the top.                                                                                                                                                                 |
+| autoArrange |          boolean           |  false  | Includes smart arrange of elements. In this case, the elements will not be placed strictly in order in each column, instead, the component will take into account the element's height and position the element in the correct column to create an optimal layout (see «Auto arrange»). |
 
 > Since the `Masonry` component is a `div` element, you can also pass any property available to the `div` element.
 
@@ -96,23 +96,23 @@ You don't even need to include all the values for all breakpoints that are in th
 
 > If you set a minimum breakpoint more than 0px, for example, 300px, then when the browser window is between 0px and 300px wide (not including 300px), the `columns` and `gap` properties will take on their default values.
 
-## Smart positioning
+## Auto arrange
 
-By default, the smart positioning of elements is enabled in the `Masonry` component, which means if the elements are much differ in height relative to each other, the component will automatically determine for each element the column in which the element will be placed. Otherwise, we may have a situation in which one column is much higher than the others.
+By default, the smart arrange of elements is disabled, which means that elements will be placed strictly in turn in each column, regardless of their height. In most cases this will not cause any problems, however, sometimes it can create a situation where one column is much taller than the others. To prevent such a situation, you can use the additional property `autoArrange`. With the `autoArrange` property enabled, the component will automatically define a column for each element, taking into account the height of the element itself, to create an optimal layout.
 
-Let's take a look at a simple example **without** smart positioning:
+Let's look at a simple example with the **disabled** `autoArrange`:
 
 <img src="assets/masonry-without-align.png" alt="masonry-without-align" width="900" >
 
-At first, it is nothing unusual and even logical, when the elements are arranged alternately in each column from left to right, that can be seen by the numbering in the upper left corner of each element.
+As you can see from the numbering, the elements are arranged strictly in turn from left to right, while the left column is twice the size of the right one.
 
-Let's now take a look at the same example, but this time **with** smart positioning of elements:
+Let's now look at the same example, but this time with the **enabled** `autoArrange`:
 
 <img src="assets/masonry-with-align.png" alt="masonry-with-align" width="900">
 
-The size of the elements remains the same, however, we can see how the elements line up in optimal positions for themselves, while creating the most successful structure.
+The size of the elements remains the same, however, we can see how the elements are lined up out of sequence, creating the most optimal layout.
 
-This behavior is not always necessary, because it will need the additional recalculation of elements, so you can disable this option by passing the `autoArrange` property with the value `true`.
+> This behavior is not always necessary, and it leads to additional recalculation of elements, so this option is disabled by default.
 
 ## License
 
