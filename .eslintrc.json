@@ -18,7 +18,7 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "prettier", "react"],
+  "plugins": ["react", "@typescript-eslint", "prettier"],
   "rules": {
     "arrow-body-style": 0,
     "consistent-return": 1,

@@ -1,4 +1,13 @@
-import { useState, useEffect, useMemo, useRef, Children, forwardRef, isValidElement } from 'react';
+import {
+  useState,
+  useLayoutEffect,
+  useEffect,
+  useMemo,
+  useRef,
+  Children,
+  forwardRef,
+  isValidElement,
+} from 'react';
 import useResize from './useResize';
 
 function getCurrentParam<T, B extends { [key: string]: T } = any>(
@@ -53,7 +62,7 @@ function MasonryComponent<B extends { [key: string]: number }>(
   });
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (autoArrange && !arrange) setArrange(true);
 
     return () => {

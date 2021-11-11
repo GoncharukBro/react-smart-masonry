@@ -10,23 +10,24 @@ function getCurrentBreakpoints(breakpoints: Breakpoints, width: number) {
   return normalizedBreakpoints?.filter((item) => item[1] <= width).map((item) => item[0]);
 }
 
+function getState(breakpoints: Breakpoints) {
+  return {
+    width: (window ?? global).innerWidth,
+    currentBreakpoints: getCurrentBreakpoints(breakpoints, (window ?? global).innerWidth),
+  };
+}
+
 /**
  * Запускает процесс вычисления текущей контрольной точки по ширине окна браузера.
  * @param breakpoints контрольные точки переданные в `props` компоненту `Masonry`
  * @returns объект со свойством текущих контрольных точек и ширины окна браузера
  */
 export default function useResize(breakpoints: Breakpoints) {
-  const [state, setState] = useState(() => ({
-    width: window.innerWidth,
-    currentBreakpoints: getCurrentBreakpoints(breakpoints, window.innerWidth),
-  }));
+  const [state, setState] = useState(() => getState(breakpoints));
 
   useEffect(() => {
     const handleResize = () => {
-      setState({
-        width: window.innerWidth,
-        currentBreakpoints: getCurrentBreakpoints(breakpoints, window.innerWidth),
-      });
+      setState(getState(breakpoints));
     };
 
     window.addEventListener('resize', handleResize);

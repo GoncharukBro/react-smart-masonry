@@ -114,6 +114,12 @@ The size of the elements remains the same, however, we can see how the elements 
 
 > This behavior is not always necessary, and it leads to additional recalculation of elements, so this option is disabled by default.
 
+## Feedback
+
+If you find a bug or want to make a suggestion for improving the package, [open the issues on GitHub](https://github.com/GoncharukBro/react-smart-masonry/issues) or email [goncharuk.bro@gmail.com](mailto:goncharuk.bro@gmail.com).
+
+Support the project with a star on [GitHub](https://github.com/GoncharukBro/react-smart-masonry) ⭐.
+
 ## License
 
 MIT © [Nikolay Goncharuk](https://github.com/GoncharukBro)
