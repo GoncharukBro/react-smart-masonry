@@ -118,7 +118,7 @@ The size of the elements remains the same, however, we can see how the elements 
 
 If you find a bug or want to make a suggestion for improving the package, [open the issues on GitHub](https://github.com/GoncharukBro/react-smart-masonry/issues) or email [goncharuk.bro@gmail.com](mailto:goncharuk.bro@gmail.com).
 
-Support the project with a star on [GitHub](https://github.com/GoncharukBro/react-smart-masonry) ⭐.
+Support the project with a star ⭐ on [GitHub](https://github.com/GoncharukBro/react-smart-masonry).
 
 ## License
 
